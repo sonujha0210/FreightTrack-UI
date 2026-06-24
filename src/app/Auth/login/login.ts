@@ -5,14 +5,14 @@ import { AuthService } from '../auth.service';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-register',
+  selector: 'app-login',
   standalone: true,
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './register.html',
-  styleUrls: ['./register.css']
+  templateUrl: './login.html',
+  styleUrls: ['./login.css']
 })
-export class RegisterComponent {
-  registerForm: FormGroup;
+export class LoginComponent {
+  loginForm: FormGroup;
   loading = false;
   error: string | null = null;
 
@@ -21,33 +21,30 @@ export class RegisterComponent {
     private authService: AuthService,
     private router: Router
   ) {
-    this.registerForm = this.fb.group({
-      name: ['', Validators.required],
+    this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['', Validators.required]
+      password: ['', Validators.required]
     });
   }
 
   onSubmit() {
-    if (this.registerForm.invalid) {
+    if (this.loginForm.invalid) {
       return;
     }
 
     this.loading = true;
     this.error = null;
 
-    const { name, email, password, role } = this.registerForm.value;
+    const { email, password } = this.loginForm.value;
 
-    this.authService.register(name, email, password, role).subscribe({
+    this.authService.login(email, password).subscribe({
       next: () => {
-        // Registration successful, navigate to login
-        this.router.navigate(['/login']);
+        // Login successful, redirect to home or dashboard
+        this.router.navigate(['/']);
       },
       error: (err) => {
         this.loading = false;
-        // Assuming the backend returns error message in err.error or err.message
-        this.error = err.error?.message || err.message || 'Registration failed';
+        this.error = err.error?.message || err.message || 'Login failed';
       }
     });
   }

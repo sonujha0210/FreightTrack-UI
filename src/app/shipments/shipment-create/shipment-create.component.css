@@ -1,0 +1,13 @@
+.card {
+  border: none;
+  border-radius: 0.75rem;
+}
+
+.form-label {
+  font-size: 0.875rem;
+  margin-bottom: 0.375rem;
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}

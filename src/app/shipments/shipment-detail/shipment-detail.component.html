@@ -1,0 +1,228 @@
+<div class="container-fluid py-4">
+  <!-- Loading -->
+  @if (loading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="text-muted mt-2">Loading shipment details...</p>
+    </div>
+  }
+
+  <!-- Error -->
+  @if (error && !loading) {
+    <div class="text-center py-5">
+      <div class="mb-3">
+        <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #dc3545;"></i>
+      </div>
+      <h5 class="text-danger">{{ error }}</h5>
+      <a class="btn btn-primary mt-3" routerLink="/shipments">Back to Shipments</a>
+    </div>
+  }
+
+  @if (shipment && !loading) {
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <a class="btn btn-outline-secondary btn-sm" routerLink="/shipments">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+          <h2 class="fw-bold mb-1">Shipment #{{ shipment.id }}</h2>
+          <p class="text-muted mb-0">{{ shipment.origin }} → {{ shipment.destination }}</p>
+        </div>
+        <span class="badge {{ getStatusBadgeClass(shipment.status) }} rounded-pill fs-6 mt-2">
+          {{ shipment.status }}
+        </span>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-primary" (click)="toggleEdit()">
+          <i class="bi bi-pencil me-1"></i> {{ editMode ? 'Cancel' : 'Edit' }}
+        </button>
+        <a class="btn btn-outline-info" [routerLink]="['/shipments', shipment.id, 'history']">
+          <i class="bi bi-clock-history me-1"></i> History
+        </a>
+        <button class="btn btn-outline-danger" (click)="deleteShipment()">
+          <i class="bi bi-trash me-1"></i> Delete
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Alert -->
+    @if (error) {
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+        <button type="button" class="btn-close" (click)="error = null" aria-label="Close"></button>
+      </div>
+    }
+
+    <div class="row g-4">
+      <!-- Shipment Details Card -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-box-seam me-2"></i>Shipment Details
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            @if (editMode) {
+              <form [formGroup]="editForm" (ngSubmit)="onUpdate()">
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Origin</label>
+                  <input type="text" class="form-control" formControlName="origin"
+                    [class.is-invalid]="editForm.get('origin')?.invalid && editForm.get('origin')?.touched">
+                  @if (editForm.get('origin')?.invalid && editForm.get('origin')?.touched) {
+                    <div class="invalid-feedback">Origin is required.</div>
+                  }
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Destination</label>
+                  <input type="text" class="form-control" formControlName="destination"
+                    [class.is-invalid]="editForm.get('destination')?.invalid && editForm.get('destination')?.touched">
+                  @if (editForm.get('destination')?.invalid && editForm.get('destination')?.touched) {
+                    <div class="invalid-feedback">Destination is required.</div>
+                  }
+                </div>
+                <div class="mb-3">
+                  <label class="form-label fw-semibold">Customer ID</label>
+                  <input type="number" class="form-control" formControlName="customerId"
+                    [class.is-invalid]="editForm.get('customerId')?.invalid && editForm.get('customerId')?.touched">
+                  @if (editForm.get('customerId')?.invalid && editForm.get('customerId')?.touched) {
+                    <div class="invalid-feedback">Valid customer ID is required.</div>
+                  }
+                </div>
+                <button type="submit" class="btn btn-primary" [disabled]="editLoading">
+                  @if (editLoading) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                  }
+                  <i class="bi bi-check-lg me-1"></i> Save Changes
+                </button>
+              </form>
+            } @else {
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted small">Origin</div>
+                <div class="col-sm-8 fw-medium">{{ shipment.origin }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted small">Destination</div>
+                <div class="col-sm-8 fw-medium">{{ shipment.destination }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted small">Customer</div>
+                <div class="col-sm-8 fw-medium">{{ shipment.customerName || 'Customer #' + shipment.customerId }}</div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted small">Status</div>
+                <div class="col-sm-8">
+                  <span class="badge {{ getStatusBadgeClass(shipment.status) }} rounded-pill">
+                    {{ shipment.status }}
+                  </span>
+                </div>
+              </div>
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted small">Created</div>
+                <div class="col-sm-8">{{ shipment.createdDate | date:'medium' }}</div>
+              </div>
+              @if (shipment.updatedDate) {
+                <div class="row mb-3">
+                  <div class="col-sm-4 text-muted small">Last Updated</div>
+                  <div class="col-sm-8">{{ shipment.updatedDate | date:'medium' }}</div>
+                </div>
+              }
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Event Card -->
+      <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-plus-circle me-2"></i>Add Tracking Event
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            <form [formGroup]="eventForm" (ngSubmit)="onAddEvent()">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Status <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="status"
+                  [class.is-invalid]="eventForm.get('status')?.invalid && eventForm.get('status')?.touched">
+                  <option value="">Select status</option>
+                  <option value="Pending">Pending</option>
+                  <option value="In Transit">In Transit</option>
+                  <option value="Delivered">Delivered</option>
+                  <option value="On Hold">On Hold</option>
+                  <option value="Cancelled">Cancelled</option>
+                </select>
+                @if (eventForm.get('status')?.invalid && eventForm.get('status')?.touched) {
+                  <div class="invalid-feedback">Status is required.</div>
+                }
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Location <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="location" placeholder="e.g., Chicago, IL"
+                  [class.is-invalid]="eventForm.get('location')?.invalid && eventForm.get('location')?.touched">
+                @if (eventForm.get('location')?.invalid && eventForm.get('location')?.touched) {
+                  <div class="invalid-feedback">Location is required.</div>
+                }
+              </div>
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Notes</label>
+                <textarea class="form-control" formControlName="notes" rows="2" placeholder="Optional notes"></textarea>
+              </div>
+              <button type="submit" class="btn btn-success" [disabled]="eventLoading">
+                @if (eventLoading) {
+                  <span class="spinner-border spinner-border-sm me-2"></span>
+                }
+                <i class="bi bi-plus-lg me-1"></i> Add Event
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Events Timeline -->
+      <div class="col-12">
+        <div class="card shadow-sm">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0">
+              <i class="bi bi-clock-history me-2"></i>Event History
+            </h5>
+          </div>
+          <div class="card-body p-4">
+            @if (events.length > 0) {
+              <div class="timeline">
+                @for (event of events; track event.id; let last = $last) {
+                  <div class="timeline-item">
+                    <div class="timeline-marker {{ getStatusBadgeClass(event.status) }}"></div>
+                    @if (!last) {
+                      <div class="timeline-line"></div>
+                    }
+                    <div class="timeline-content ms-4 mb-4">
+                      <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                          <span class="badge {{ getStatusBadgeClass(event.status) }} rounded-pill mb-1">
+                            {{ event.status }}
+                          </span>
+                          <p class="mb-1">{{ event.location }}</p>
+                          @if (event.notes) {
+                            <p class="text-muted small mb-0">{{ event.notes }}</p>
+                          }
+                        </div>
+                        <small class="text-muted">{{ event.timestamp | date:'medium' }}</small>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <p class="text-muted text-center py-3 mb-0">No events recorded yet.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

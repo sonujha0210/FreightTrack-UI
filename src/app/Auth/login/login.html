@@ -1,0 +1,90 @@
+<div class="min-vh-100 d-flex align-items-center bg-light py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-5 col-lg-4">
+        <!-- Logo / Brand -->
+        <div class="text-center mb-4">
+          <h1 class="fw-bold text-primary mb-1">FreightTrack</h1>
+          <p class="text-muted">Shipment Tracking System</p>
+        </div>
+
+        <!-- Login Card -->
+        <div class="card shadow-sm border-0 rounded-4">
+          <div class="card-body p-4">
+            <h4 class="fw-bold mb-1">Welcome Back</h4>
+            <p class="text-muted mb-4">Sign in to your account</p>
+
+            <!-- Error Alert -->
+            @if (error) {
+              <div class="alert alert-danger py-2 small" role="alert">
+                <i class="bi bi-exclamation-triangle me-1"></i>{{ error }}
+              </div>
+            }
+
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <!-- Email -->
+              <div class="mb-3">
+                <label for="email" class="form-label fw-semibold">Email</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">
+                    <i class="bi bi-envelope"></i>
+                  </span>
+                  <input
+                    id="email"
+                    type="email"
+                    class="form-control"
+                    [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                    formControlName="email"
+                    placeholder="name@example.com"
+                  >
+                </div>
+                @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                  <div class="invalid-feedback d-block">
+                    Please enter a valid email address.
+                  </div>
+                }
+              </div>
+
+              <!-- Password -->
+              <div class="mb-4">
+                <label for="password" class="form-label fw-semibold">Password</label>
+                <div class="input-group">
+                  <span class="input-group-text bg-light">
+                    <i class="bi bi-lock"></i>
+                  </span>
+                  <input
+                    id="password"
+                    type="password"
+                    class="form-control"
+                    [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                    formControlName="password"
+                    placeholder="Enter your password"
+                  >
+                </div>
+                @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+                  <div class="invalid-feedback d-block">
+                    Password is required.
+                  </div>
+                }
+              </div>
+
+              <!-- Submit -->
+              <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold" [disabled]="loading">
+                @if (loading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                }
+                <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Register Link -->
+        <p class="text-center text-muted mt-4 mb-0">
+          Don't have an account?
+          <a class="fw-semibold text-decoration-none" routerLink="/register">Register here</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

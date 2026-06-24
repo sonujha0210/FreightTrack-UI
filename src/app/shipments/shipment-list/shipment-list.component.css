@@ -1,0 +1,23 @@
+.table th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.btn-group .btn {
+  transition: all 0.15s ease;
+}
+
+.card {
+  border: none;
+  border-radius: 0.75rem;
+}
+
+.card .card-body {
+  padding: 1.25rem;
+}

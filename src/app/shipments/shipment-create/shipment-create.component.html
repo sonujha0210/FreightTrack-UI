@@ -1,0 +1,102 @@
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-xl-6">
+      <!-- Header -->
+      <div class="d-flex align-items-center mb-4">
+        <a class="btn btn-outline-secondary btn-sm me-3" routerLink="/shipments">
+          <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+          <h2 class="fw-bold mb-1">Create Shipment</h2>
+          <p class="text-muted mb-0">Fill in the details to create a new shipment</p>
+        </div>
+      </div>
+
+      <!-- Error Alert -->
+      @if (error) {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+          <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+          <button type="button" class="btn-close" (click)="error = null" aria-label="Close"></button>
+        </div>
+      }
+
+      <!-- Form Card -->
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <form [formGroup]="shipmentForm" (ngSubmit)="onSubmit()">
+            <!-- Origin -->
+            <div class="mb-3">
+              <label for="origin" class="form-label fw-semibold">
+                Origin <span class="text-danger">*</span>
+              </label>
+              <input
+                id="origin"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="shipmentForm.get('origin')?.invalid && shipmentForm.get('origin')?.touched"
+                formControlName="origin"
+                placeholder="e.g., New York, NY"
+              >
+              @if (shipmentForm.get('origin')?.invalid && shipmentForm.get('origin')?.touched) {
+                <div class="invalid-feedback">
+                  Origin is required (min 2 characters).
+                </div>
+              }
+            </div>
+
+            <!-- Destination -->
+            <div class="mb-3">
+              <label for="destination" class="form-label fw-semibold">
+                Destination <span class="text-danger">*</span>
+              </label>
+              <input
+                id="destination"
+                type="text"
+                class="form-control"
+                [class.is-invalid]="shipmentForm.get('destination')?.invalid && shipmentForm.get('destination')?.touched"
+                formControlName="destination"
+                placeholder="e.g., Los Angeles, CA"
+              >
+              @if (shipmentForm.get('destination')?.invalid && shipmentForm.get('destination')?.touched) {
+                <div class="invalid-feedback">
+                  Destination is required (min 2 characters).
+                </div>
+              }
+            </div>
+
+            <!-- Customer ID -->
+            <div class="mb-4">
+              <label for="customerId" class="form-label fw-semibold">
+                Customer ID <span class="text-danger">*</span>
+              </label>
+              <input
+                id="customerId"
+                type="number"
+                class="form-control"
+                [class.is-invalid]="shipmentForm.get('customerId')?.invalid && shipmentForm.get('customerId')?.touched"
+                formControlName="customerId"
+                placeholder="Enter customer ID"
+              >
+              @if (shipmentForm.get('customerId')?.invalid && shipmentForm.get('customerId')?.touched) {
+                <div class="invalid-feedback">
+                  Valid customer ID is required.
+                </div>
+              }
+            </div>
+
+            <!-- Actions -->
+            <div class="d-flex gap-3 justify-content-end">
+              <a class="btn btn-outline-secondary" routerLink="/shipments">Cancel</a>
+              <button type="submit" class="btn btn-primary px-4" [disabled]="loading">
+                @if (loading) {
+                  <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                }
+                <i class="bi bi-check-lg me-1"></i> Create Shipment
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
